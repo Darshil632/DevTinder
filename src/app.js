@@ -1,20 +1,48 @@
 const express = require("express");
-const { adminAuth, userauth } = require("./middlewares/auth");
+// const { adminAuth, userauth } = require("./middlewares/auth");
+const connectDB = require("./config/database");
+const User = require("./models/user.js");
 const app = express();
 
-app.use("/admin", adminAuth);
-app.get("/admin/getAllUser", (req, res) => {
-  res.send("All data Sent!");
+connectDB()
+  .then(() => {
+    console.log("Database is connected successfully!");
+    app.listen(3000, () => {
+      console.log("Server is start listening at 3000!");
+    });
+  })
+  .catch((err) => {
+    console.log("Database is failed in connection!");
+  });
+
+app.post("/singup", async (req, res) => {
+  const user = new User({
+    firstName: "Stuti",
+    lastName: "Vijay",
+    email: "stuti@gmail.com",
+    password: "stuti@123",
+  });
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (err) {
+    res.status(400).send("Bad Request!!");
+  }
 });
-app.get("/admin/deleteuser", (req, res) => {
-  res.send("All data deleted!");
-});
-app.get("/user/login", (req, res) => {
-  res.send("User logged in successfully");
-});
-app.use("/user", userauth, (req, res) => {
-  res.send("User data sent");
-});
+
+// app.use("/admin", adminAuth);
+// app.get("/admin/getAllUser", (req, res) => {
+//   res.send("All data Sent!");
+// });
+// app.get("/admin/deleteuser", (req, res) => {
+//   res.send("All data deleted!");
+// });
+// app.get("/user/login", (req, res) => {
+//   res.send("User logged in successfully");
+// });
+// app.use("/user", userauth, (req, res) => {
+//   res.send("User data sent");
+// });
 
 // app.use(
 //   "/user",
@@ -52,6 +80,3 @@ app.use("/user", userauth, (req, res) => {
 // app.use("/", (req, res) => {
 //   res.send("Hello from the server");
 // });
-app.listen(3000, () => {
-  console.log("Server is starting........");
-});
